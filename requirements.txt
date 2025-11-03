@@ -1,0 +1,11 @@
+mypy
+PyPDF2
+pathlib
+sentence_transformers
+mistralai
+getpass
+faiss
+requests
+time
+tqdm
+python-dotenv
