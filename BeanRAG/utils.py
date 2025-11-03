@@ -1,11 +1,8 @@
 from mistralai import Mistral
+from sentence_transformers import SentenceTransformer
 
-def get_text_embedding(input, client):
-    embeddings_batch_response = client.embeddings.create(
-          model="mistral-embed",
-          inputs=input
-      )
-    return embeddings_batch_response.data[0].embedding
+def get_text_embedding(input, model):
+    return model.encode_query(input)
 
 def run_mistral(user_message, client, model="mistral-large-latest"):
     messages = [

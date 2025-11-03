@@ -5,6 +5,7 @@ import json
 import os
 import numpy as np
 from mistralai import Mistral
+from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 from BeanRAG.utils import *
 
@@ -24,6 +25,10 @@ def main():
     #--------------Authenticate Mistral Model----------------#
     client = Mistral(api_key=MISTRAL_API_KEY)
 
+
+    #------------Initialize Embedding model------------------#
+    model = SentenceTransformer("intfloat/multilingual-e5-base")
+
     #---------------Load vector database---------------------#
     BeanRAG_VectorDB = faiss.read_index("BeanRAG_VectorDB.faiss")
     # Also load the .json file, to get context
@@ -38,7 +43,7 @@ def main():
 
     #----------------Let user input query & embed--------------------#
     query = input('Hallo hardwerkende Boon, welk werkprobleem zit jij vandaag mee? \n')
-    query_embedding = get_text_embedding(input=query, client=client)
+    query_embedding = get_text_embedding(input=query, model = model)
 
     #-----------Find relevant information from query---------------------#
     D, I = BeanRAG_VectorDB.search(np.array([query_embedding]), k=3) # distance, index
@@ -58,7 +63,8 @@ def main():
     """
 
     answer = run_mistral(user_message=prompt, client=client)
-    print(answer, "\n")
+    print(answer, "\n\n")
+    print("Hier is de informatie die de chatbot heeft gekregen om de vraag te beantwoorden \n",retrieved_chunks)
 
 
 main()
