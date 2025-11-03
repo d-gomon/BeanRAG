@@ -26,6 +26,22 @@ Eens de documenten gechunked zijn, willen we iedere chunk representeren in een l
 
 Er zijn verschillende embedders die we kunnen gebruiken. Omdat de documenten veelal in het Nederlands zijn, heb ik ervoor gekozen om het Mistral-Embed model te gebruiken. Hiermee hoeven we dan ook geen local compute te doen. Als we in de toekomst het allemaal lokaal willen houden, zouden we kunnen overwegen om via ollama een of ander (kleiner) model te gebruiken voor de embeddings. Ik denk echter dat je daar wel wat efficientie mee verliest. Aangezien je niet zo vaak de dataset hoeft te updaten, is het niet zo een probleem om zo nu en dan een niet lokaal model aan te roepen.
 
+Eens we de embeddings berekend hebben, slaan we deze op in een [`faiss`](https://faiss.ai/) vector database. Dit is een speciaal soort database wat toestaat om snel nearest neighbours te vinden van een vector. We gebruiken deze vector database omdat we snel op similarity willen zoeken t.o.v. onze query. De database wordt opgeslagen onder de naam `BeanRAG_VectorDB.faiss`.
+
 
 ## Deel 3: Query + Opzoeken van relevante info.
 
+Nu willen we natuurlijk een query sturen naar Mistral en een antwoord krijgen gebaseerd op de informatie in onze database. Eens de query getyped is door de Bean wordt deze embedded door hetzelfde model en daarna zoeken we de meest similar elementen op in de vector database. Mistral krijgt dan de volgende prompt, waarbij {query} staat voor de vraag en {retrieved_chunks} voor de relevante data:
+
+
+#### Prompt voor AI assistent
+Jij bent een assistent voor een adviseur arbeid & gezondheid.
+Jouw doel is om precieze informatie te geven over wet en regelgeving wat betreft arbeid & gezondheidswetgeving en de aanpak van verzuim.
+Hieronder vind je informatie die relevant is voor de gestelde vraag.
+
+{retrieved_chunks}
+
+Gegeven deze informatie en niet voorgaande kennis, antwoord de volgende vraag.
+Vraag: 
+
+{query}
