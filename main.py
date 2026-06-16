@@ -17,33 +17,35 @@ def main():
     #Then provide user the output
     
     #-----------Load Mistral API key--------------------#
-    load_dotenv()
-    MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
-    if not MISTRAL_API_KEY:
-        raise ValueError("No Mistral API key found. Set the MISTRAL_API_KEY environment variable in a .env file in the main directory.")
+    #Use setup_env() function from BeanRAG.utils, which checks if an API key already exists.
+    MISTRAL_API_KEY = setup_env()
 
     #--------------Authenticate Mistral Model----------------#
     client = Mistral(api_key=MISTRAL_API_KEY)
-
 
     #------------Initialize Embedding model------------------#
     model = SentenceTransformer("intfloat/multilingual-e5-base")
 
     #---------------Load vector database---------------------#
     BeanRAG_VectorDB = faiss.read_index("BeanRAG_VectorDB.faiss")
-    # Also load the .json file, to get context
-    # Pad naar je JSON-bestand
-    json_path = "structured_chunks.json"
+    # Also load the .pickle file to get the context
+    # Path to the pickle file
+    pickle_path = "chunks.pickle"
 
     # JSON-bestand inlezen, om relevante metadata ook te returnen
-    with open(json_path, "r", encoding="utf-8") as f:
-        chunks = json.load(f)
+    chunks = load_from_pickle(pickle_path)
     
 
 
     #----------------Let user input query & embed--------------------#
     query = input('Hallo hardwerkende Boon, welk werkprobleem zit jij vandaag mee? \n')
     query_embedding = get_text_embedding(input=query, model = model)
+
+
+    # USER STUPID
+    # LLM: WAT WIL DE USER EIGENLIJK WETEN? GEEF ME 5 VRAGEN
+    # EMBED DIE 5 VRAGEN
+
 
     #-----------Find relevant information from query---------------------#
     D, I = BeanRAG_VectorDB.search(np.array([query_embedding]), k=3) # distance, index

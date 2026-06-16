@@ -1,0 +1,4 @@
+1. Chunking functies voor wetgeving die werken
+2. Local LLM ipv Cloud LLM (???)
+3. User interface
+4. Misschien verbeteren met extra query strategies???? - optimalisatie

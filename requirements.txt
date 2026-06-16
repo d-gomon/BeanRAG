@@ -3,9 +3,6 @@ PyPDF2
 pathlib
 sentence_transformers
 mistralai
-getpass
-faiss
-requests
-time
-tqdm
+faiss-cpu
 python-dotenv
+pickle
